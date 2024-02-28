@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# remove read permissions from this file
-chmod -r data/bad_perms.csv
-
 echo -e "\nArgument Testing:\n"
 
 #Testing no file inputted
@@ -283,16 +280,16 @@ fi
 
 echo -n "Checking incorrect movement input - "
 ./skeleton validMazes/20x7.txt < testScripts/IncorrectMovement.txt > tmp
-if grep -q "Error: Incorrect Input";
+if grep -q "Error: Incorrect Input" tmp;
 then
     echo "PASS"
 else
     echo "FAIL"
 fi 
 
-echo -n "Testing 2 inputs - "
-./skeleton 5x5.txt < D.txt W.txt > tmp
-if grep -q "Error: IncorrectInput" tmp;
+echo -n "Testing a 2 character string input - "
+./skeleton validateMazes/5x5.txt < testScripts/IncorrectMovement.txt > tmp
+if grep -q "Error: Incorrect Input" tmp;
 then
     echo "PASS"
 else
@@ -300,10 +297,59 @@ else
 fi
 
 echo -n "Testing a 2 character string input - "
-./skeleton 5x5.txt < testScripts/IncorrectInput > tmp
+./skeleton validMazes/5x5.txt < testScripts/IncorrectMovement.txt > tmp
 if grep -q "Error: Incorrect Input" tmp;
 then
     echo "PASS"
 else
     echo "FAIL"
 fi
+
+echo -n "Testing for invalid movement e.g. out of the maze"
+./skeleton validMazes/5x5.txt < testScripts/A.txt > tmp
+if grep -q "Error: Incorrect Input" tmp;
+then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+echo -e "\nTesting the Map\n"
+
+echo -n "Testing the 'M' input - "
+./skeleton validMazes/5x5.txt < testScripts/M.txt > tmp
+if cmp -s testScripts/5x5_map.txt tmp.txt;
+then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+echo -n "Testing the 'm' input - "
+./skeleton validMazes/5x5.txt < testScripts/mLower.txt > tmp
+if cmp -s testScripts/5x5_map.txt tmp.txt;
+then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+echo -n "Testing the 'm' input - "
+./skeleton validMazes/5x5.txt < testScripts/mLower.txt > tmp
+if cmp -s testScripts/5x5_map.txt tmp.txt;
+then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+echo -n "Testing the win game output - "
+./skeleton 5x5.txt < testScripts/Win.txt > tmp
+if grep -q "Congradulations, you have won!" tmp;
+then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+rm -f tmp
