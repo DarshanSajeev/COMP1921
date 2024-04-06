@@ -1,6 +1,6 @@
 /**
  * @file maze.c
- * @author (YOUR NAME)
+ * @author Darshan Sajeev
  * @brief Code for the maze game for COMP1921 Assignment 2
  * NOTE - You can remove or edit this file however you like - this is just a provided skeleton code
  * which may be useful to anyone who did not complete assignment 1.
@@ -44,6 +44,10 @@ typedef struct __Maze
  */
 int create_maze(maze *this, int height, int width)
 {
+    
+    if (height > MAX_DIM || height < MIN_DIM || width > MAX_DIM || width < MIN_DIM){
+        return EXIT_FILE_ERROR;
+    }
 }
 
 /**
@@ -53,6 +57,7 @@ int create_maze(maze *this, int height, int width)
  */
 void free_maze(maze *this)
 {
+
 }
 
 /**
