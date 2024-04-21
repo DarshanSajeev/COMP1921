@@ -44,10 +44,29 @@ typedef struct __Maze
  */
 int create_maze(maze *this, int height, int width)
 {
-    
-    if (height > MAX_DIM || height < MIN_DIM || width > MAX_DIM || width < MIN_DIM){
-        return EXIT_FILE_ERROR;
+    //Allocate space for the map
+    //Code adapted from https://stackoverflow.com/questions/37650088/in-c-how-do-i-allocate-space-for-my-struct
+    this->map = (char **)malloc(height * sizeof(char **));
+    //Check if map is empty
+    if(this->map == NULL){
+        return 1;
     }
+    // //Read the maze
+    // for(int i=0; i < this->height; i++){
+    //     this->map[i] = (char *)malloc((width + 1) * sizeof(char));
+    //     if (this->map[i] == NULL){
+    //         for(int j = 0; j < i; j++){
+    //             free(this->map);
+    //         }
+    //         free(this->map);
+    //         return 1;
+    //     }
+    // }
+
+    //Success condition
+    this->height = height;
+    this->width = width;
+    return 0;
 }
 
 /**
@@ -55,9 +74,13 @@ int create_maze(maze *this, int height, int width)
  *
  * @param this the pointer to the struct to free
  */
+//Code adapted from https://stackoverflow.com/questions/13590812/c-freeing-structs
 void free_maze(maze *this)
 {
-
+    for (int i = 0; i < this->height; i++) {
+        free(this->map[i]);
+    }
+    free(this->map);
 }
 
 /**
@@ -68,6 +91,17 @@ void free_maze(maze *this)
  */
 int get_width(FILE *file)
 {
+    //Code adapted from https://stackoverflow.com/questions/27169161/how-do-i-check-if-the-line-is-over
+    //and https://stackoverflow.com/questions/12080129/how-can-know-if-the-end-of-line-in-c
+    //and https://stackoverflow.com/questions/32366665/resetting-pointer-to-the-start-of-file
+    //Increase width until end of line is reached 
+    int width = 0;
+    int temp = fgetc(file);
+    while (temp != EOF && temp != '\n'){
+        width++;
+    }
+    rewind(temp);
+    return width;
 }
 
 /**
@@ -78,6 +112,13 @@ int get_width(FILE *file)
  */
 int get_height(FILE *file)
 {
+    int height = 0;
+    int temp = fgetc(file);
+    while (temp != EOF && temp != '\n'){
+        height++;
+    }
+    rewind(temp);
+    return height;
 }
 
 /**
@@ -89,6 +130,7 @@ int get_height(FILE *file)
  */
 int read_maze(maze *this, FILE *file)
 {
+    
 }
 
 /**
@@ -140,6 +182,7 @@ void move(maze *this, coord *player, char direction)
  */
 int has_won(maze *this, coord *player)
 {
+    
 }
 
 int main()
