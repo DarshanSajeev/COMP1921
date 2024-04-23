@@ -100,7 +100,7 @@ int get_width(FILE *file)
     while (temp != EOF && temp != '\n'){
         width++;
     }
-    rewind(temp);
+    fseek(file, 0, SEEK_SET);
     return width;
 }
 
@@ -117,7 +117,7 @@ int get_height(FILE *file)
     while (temp != EOF && temp != '\n'){
         height++;
     }
-    rewind(temp);
+    fseek(file, 0, SEEK_SET);
     return height;
 }
 
@@ -130,7 +130,25 @@ int get_height(FILE *file)
  */
 int read_maze(maze *this, FILE *file)
 {
-    
+    this->width = get_width(file);
+    this->height = get_height(file);
+
+    this->map = (char **)malloc(this->height * sizeof(char *));
+    if (this->map == NULL) {
+        return 1; // Allocation failed
+    }
+    for (int i = 0; i < this->height; i++) {
+        this->map[i] = (char *)malloc((this->width + 1) * sizeof(char));
+        if (this->map[i] == NULL) {
+            // Free previously allocated memory
+            for (int j = 0; j < i; j++) {
+                free(this->map[j]);
+            }
+            free(this->map);
+            return 1; // Allocation failed
+        }
+        fgets(this->map[i], this->width + 1, file);
+    }
 }
 
 /**
