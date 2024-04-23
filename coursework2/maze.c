@@ -148,7 +148,13 @@ int read_maze(maze *this, FILE *file)
             return 1; // Allocation failed
         }
         fgets(this->map[i], this->width + 1, file);
+
+        // Set start and end coordinates manually
+        // (You need to implement this logic)
     }
+
+    // Add a return statement for successful completion
+    return 0; // Success
 }
 
 /**
@@ -189,6 +195,35 @@ void print_maze(maze *this, coord *player)
  */
 void move(maze *this, coord *player, char direction)
 {
+    switch (direction) {
+        case 'w':
+        case 'W':
+            if (player->y > 0 && this->map[player->y - 1][player->x] != '#') {
+                player->y--;
+            }
+            break;
+        case 'a':
+        case 'A':
+            if (player->x > 0 && this->map[player->y][player->x - 1] != '#') {
+                player->x--;
+            }
+            break;
+        case 's':
+        case 'S':
+            if (player->y < this->height - 1 && this->map[player->y + 1][player->x] != '#') {
+                player->y++;
+            }
+            break;
+        case 'd':
+        case 'D':
+            if (player->x < this->width - 1 && this->map[player->y][player->x + 1] != '#') {
+                player->x++;
+            }
+            break;
+        default:
+            printf("Invalid input\n");
+            break;
+    }
 }
 
 /**
@@ -200,25 +235,82 @@ void move(maze *this, coord *player, char direction)
  */
 int has_won(maze *this, coord *player)
 {
-    
+    if (this->map[player->y][player->x] == 'E') {
+        return 1; // Player has reached the end and won
+    } else {
+        return 0; // Player has not won yet
+    }
 }
 
-int main()
-{
-    // check args
+// int main()
+// {
+//     // check args
 
-    // set up some useful variables (you can rename or remove these if you want)
-    coord *player;
-    maze *this_maze = malloc(sizeof(maze));
-    FILE *f;
+//     // set up some useful variables (you can rename or remove these if you want)
+//     coord *player;
+//     maze *this_maze = malloc(sizeof(maze));
+//     FILE *f;
 
-    // open and validate mazefile
+//     // open and validate mazefile
 
-    // read in mazefile to struct
+//     // read in mazefile to struct
 
-    // maze game loop
+//     // maze game loop
 
-    // win
+//     // win
 
-    // return, free, exit
+//     // return, free, exit
+// }
+
+int main() {
+    // Check arguments if needed
+
+    // Set up some useful variables
+    coord player;
+    maze this_maze;
+    FILE *file;
+
+    // Open and validate maze file
+    file = fopen("maze.txt", "r"); // Replace "maze.txt" with your maze file name
+    if (file == NULL) {
+        perror("Error opening file");
+        return EXIT_FILE_ERROR;
+    }
+
+    // Read maze file into struct
+    if (read_maze(&this_maze, file) != 0) {
+        fprintf(stderr, "Error reading maze\n");
+        fclose(file);
+        return EXIT_MAZE_ERROR;
+    }
+    fclose(file);
+
+    // Initialize player position to the starting point
+    player.x = this_maze.start.x;
+    player.y = this_maze.start.y;
+
+    // Maze game loop
+    char input;
+    while (1) {
+        print_maze(&this_maze, &player);
+
+        printf("Enter movement (W/A/S/D), show map (M), or quit (Q): ");
+        scanf(" %c", &input);
+
+        if (input == 'q' || input == 'Q') {
+            break; // Quit the game loop
+        } else if (input == 'm' || input == 'M') {
+            print_maze(&this_maze, &player); // Show the entire map
+        } else {
+            move(&this_maze, &player, input); // Move the player
+            if (has_won(&this_maze, &player)) {
+                printf("Congratulations! You have won!\n");
+                break; // Exit the game loop
+            }
+        }
+    }
+
+    // Free allocated memory and exit
+    free_maze(&this_maze);
+    return EXIT_SUCCESS;
 }
